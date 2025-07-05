@@ -39,15 +39,15 @@ export const ResponsiveDialog = ({
     if(isMobile) {
         return (
             <Drawer open={open} onOpenChange={onOpenChange}>
-                <DialogContent>
-                    <DialogHeader>
+                <DrawerContent >
+                    <DrawerHeader >
                         <DrawerTitle>{title}</DrawerTitle>
-                            <DrawerDescription>{description}</DrawerDescription>
-                    </DialogHeader>
+                        <DrawerDescription>{description}</DrawerDescription>
+                    </DrawerHeader>
                     <div className="p-4">
                         {children}
                     </div>
-                </DialogContent>
+                </DrawerContent>
             </Drawer>
         )
     }
