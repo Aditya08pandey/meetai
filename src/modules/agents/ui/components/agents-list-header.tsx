@@ -45,7 +45,6 @@ export const AgentListHeader = () => {
                 )}
             </div>   
             <ScrollBar orientation="horizontal"/>
-
             </ScrollArea>   
         </div>
         </>
