@@ -96,7 +96,7 @@ export const meetingsProcessing = inngest.createFunction(
       "Summarize the following transcript: " + 
       JSON.stringify(transcriptWithSpeakers)
     );
-
+ 
     await step.run("save-summary", async () => {
       await db
       .update(meetings)
