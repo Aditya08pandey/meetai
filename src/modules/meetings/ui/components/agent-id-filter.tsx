@@ -6,7 +6,7 @@ import { CommandSelect } from "@/components/command-select";
 import { GeneratedAvatar } from "@/components/generated-avatar";
 
 import { useMeetingsFilters } from "../../hooks/use-meetings-filters";
-import { Divide } from "lucide-react";
+
 
 export const AgentIdFilter = () => {
     const [filters, setFilters] = useMeetingsFilters();
