@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {cn} from "@/lib/utils";
-
+import { DashboardTrial } from "./dashboard-trial";
 import { BotIcon, StarIcon, VideoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -110,7 +110,10 @@ export const DashboardSidebar = () => {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter className="text-white">
+               
+                <DashboardTrial />
                <DashboardUserButton />
+               
             </SidebarFooter>
         </Sidebar>
     )
