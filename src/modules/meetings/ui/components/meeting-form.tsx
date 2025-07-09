@@ -22,6 +22,7 @@ import { MeetingGetOne } from "../../types";
 import { meetingsInsertSchema } from "../../schemas";
 import { useState } from "react";
 import { NewAgentDialog } from "@/modules/agents/ui/components/new-agent-dialog";
+import { useRouter } from "next/navigation";
 
 interface MeetingFormProps {
     onSuccess? : (id?: string) => void;
@@ -35,6 +36,7 @@ export const MeetingForm = ({
     initialValues,
 }: MeetingFormProps) => {
     const trpc = useTRPC();
+    const router = useRouter();
     const queryClient = useQueryClient();
 
     const [openNewAgentDialog, setOpenNewAgentDialog] = useState(false);
@@ -50,8 +52,12 @@ export const MeetingForm = ({
     const createMeeting = useMutation(
         trpc.meetings.create.mutationOptions({
             onSuccess: async(data) => {
-                queryClient.invalidateQueries(
+               await queryClient.invalidateQueries(
                     trpc.agents.getMany.queryOptions({}),
+                );
+
+                await  queryClient.invalidateQueries(
+                    trpc.premium.getFreeUsage.queryOptions(),
                 );
 
              
@@ -60,15 +66,17 @@ export const MeetingForm = ({
             onError: (error) => {
                 toast.error(error.message);
 
-                //todo:
+                if(error.data?.code ==="FORBIDDEN"){
+                    router.push("/upgrade");
+                }
             }, 
         }),
     );
 
      const updateMeeting = useMutation(
         trpc.meetings.update.mutationOptions({
-            onSuccess: () => {
-                queryClient.invalidateQueries(
+            onSuccess: async() => {
+               await queryClient.invalidateQueries(
                     trpc.meetings.getMany.queryOptions({}),
                 );
 
@@ -82,7 +90,7 @@ export const MeetingForm = ({
             onError: (error) => {
                 toast.error(error.message);
 
-                //todo:
+                
             }, 
         }),
     );

@@ -20,6 +20,7 @@ import { GeneratedAvatar } from "@/components/generated-avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface AgentFormProps {
     onSuccess? : () => void;
@@ -33,35 +34,40 @@ export const AgentForm = ({
     initialValues,
 }: AgentFormProps) => {
     const trpc = useTRPC();
+    const router = useRouter();
     const queryClient = useQueryClient();
 
     const createAgent = useMutation(
         trpc.agents.create.mutationOptions({
-            onSuccess: () => {
-                queryClient.invalidateQueries(
+            onSuccess: async () => {
+              await  queryClient.invalidateQueries(
                     trpc.agents.getMany.queryOptions({}),
                 );
-
+              await  queryClient.invalidateQueries(
+                    trpc.premium.getFreeUsage.queryOptions(),
+                );
              
              onSuccess?.();
             },
             onError: (error) => {
                 toast.error(error.message);
 
-                //todo:
+                if(error.data?.code ==="FORBIDDEN"){
+                    router.push("/upgrade");
+                }
             }, 
         }),
     );
 
      const updateAgent = useMutation(
         trpc.agents.update.mutationOptions({
-            onSuccess: () => {
-                queryClient.invalidateQueries(
+            onSuccess: async () => {
+              await  queryClient.invalidateQueries(
                     trpc.agents.getMany.queryOptions({}),
                 );
 
              if(initialValues?.id){
-                queryClient.invalidateQueries(
+               await queryClient.invalidateQueries(
                     trpc.agents.getOne.queryOptions({id: initialValues.id}),
                 );
              }
@@ -70,7 +76,6 @@ export const AgentForm = ({
             onError: (error) => {
                 toast.error(error.message);
 
-                //todo:
             }, 
         }),
     );
