@@ -8,6 +8,20 @@
       "when": 1751827012438,
       "tag": "0000_high_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1752557394688,
+      "tag": "0001_clammy_lila_cheney",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1752566086359,
+      "tag": "0002_jazzy_shaman",
+      "breakpoints": true
     }
   ]
 }

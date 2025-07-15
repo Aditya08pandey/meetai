@@ -17,7 +17,7 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
-  onRowClick?: (row: TData) => void;
+  onRowClick?: (row: TData, event: React.MouseEvent) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -38,7 +38,7 @@ export function DataTable<TData, TValue>({
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
-              onClick={() => onRowClick?.(row.original) }
+              onClick={(event) => onRowClick?.(row.original, event) }
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 className="cursor-pointer"

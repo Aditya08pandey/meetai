@@ -103,3 +103,35 @@ export const meetings = pgTable("meetings", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 
 })
+
+export const videoCallStatus = pgEnum("video_call_status", [
+  "active",
+  "processing",
+  "completed",
+]);
+
+export const videoCalls = pgTable("video_calls", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  hostId: text("host_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  name: text("name"),
+  status: videoCallStatus("status").notNull().default("active"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const videoCallParticipants = pgTable("video_call_participants", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  callId: text("call_id")
+    .notNull()
+    .references(() => videoCalls.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  joinedAt: timestamp("joined_at").notNull().defaultNow(),
+});

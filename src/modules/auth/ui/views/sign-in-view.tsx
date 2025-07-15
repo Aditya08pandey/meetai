@@ -22,7 +22,7 @@ import{
 import Link from "next/link";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -31,6 +31,8 @@ const formSchema = z.object({
 
 export const SignInView = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams?.get("redirect") || "/";
     
     const [error, setError] = useState<string | null>(null)
     const [pending, setPending] = useState(false);
@@ -51,19 +53,17 @@ export const SignInView = () => {
             {
                 email: data.email,
                 password: data.password,
-                 callbackURL: "/"
+                callbackURL: redirectTo
             },
             {
                 onSuccess: () => {
                     setPending(false);
-                    router.push("/")
-                   
+                    router.push(redirectTo);
                 },
                 onError: ({error}) => {
                     setPending(false);
                     setError(error.message)
                 }
-                
             }
         )
     };
@@ -75,12 +75,12 @@ export const SignInView = () => {
         authClient.signIn.social(
             {
                 provider: provider,
-                callbackURL: "/"
+                callbackURL: redirectTo
             },
             {  
                 onSuccess: () => {
                     setPending(false);
-                    
+                    router.push(redirectTo);
                 },
                 onError: ({error}) => {
                     setPending(false);

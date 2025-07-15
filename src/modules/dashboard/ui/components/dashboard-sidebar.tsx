@@ -30,6 +30,11 @@ const firstSection = [
         icon: BotIcon,
         label: "Agents",
         href: "/agents"
+    },
+    {
+        icon: VideoIcon,
+        label: "Free Video Calls",
+        href: "/video-calls"
     }
 ];
 

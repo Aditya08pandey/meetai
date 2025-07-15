@@ -3,12 +3,14 @@ import {  createTRPCRouter } from '../init';
 
 import { meetingsRouter } from '@/modules/meetings/server/procedures';
 import { premiumRouter } from '@/modules/premium/server/procedures';
+import { videoCallsRouter } from '@/modules/call/server/procedures';
 
 export const appRouter = createTRPCRouter({
 
  agents: agentsRouter,
  meetings: meetingsRouter,
  premium: premiumRouter,
+ videoCalls: videoCallsRouter,
  
 })
 // export type definition of API

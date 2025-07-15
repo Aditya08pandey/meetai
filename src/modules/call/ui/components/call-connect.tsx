@@ -8,6 +8,7 @@ import {
     StreamCall,
     StreamVideo,
     StreamVideoClient,
+    getOrCreateInstance as getOrCreateStreamVideoClient,
 
 } from "@stream-io/video-react-sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -19,43 +20,55 @@ import { CallUI } from "./call-ui";
 interface Props {
     meetingId: string;
     meetingName: string;
-    userId: string;
-    userName: string;
+    userId: string; // This should be the unique user ID
+    userName: string; // This should be the user's display name, not their ID
     userImage: string;
-};
+    onJoined?: () => void;
+    endCallButton?: React.ReactNode;
+    onEnded?: () => void;
+    onLeave?: () => void;
+    onEndCall?: () => void;
+    isHost?: boolean;
+}
 
 export const CallConnect = ({
       meetingId,
     meetingName,
     userId,
     userName,
-    userImage
+    userImage,
+    onJoined,
+    endCallButton,
+    onEnded,
+    onLeave,
+    onEndCall,
+    isHost
 }: Props) => {
     const trpc = useTRPC();
     const {mutateAsync: generateToken} = useMutation(
-        trpc.meetings.generateToken.mutationOptions(),
+        trpc.videoCalls.generateToken.mutationOptions(),
     );
 
     const [client, setClient] = useState<StreamVideoClient>();
     useEffect(() => {
-        const _client = new StreamVideoClient({
-            apiKey: process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY!,
-            user: {
-                id: userId,
-                name: userName,
-                image:userImage,
-            },
-            tokenProvider: generateToken,
+      let isMounted = true;
+      const createClient = async () => {
+        const token = await generateToken({ callId: meetingId });
+        if (!isMounted) return;
+        const client = new StreamVideoClient({
+          apiKey: process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY!,
+          user: { id: userId, name: userName, image: userImage },
+          token,
         });
-
-        setClient(_client);
-
-        return () => {
-            _client.disconnectUser();
-            setClient(undefined);
-        }
-    }, [userId, userName, userImage, generateToken]);
-
+        setClient(client);
+      };
+      createClient();
+      return () => {
+        isMounted = false;
+        if (client) client.disconnectUser();
+        setClient(undefined);
+      };
+    }, [userId, userName, userImage, generateToken, meetingId]);
 
     const [call, setCall] = useState<Call>();
     useEffect(() => {
@@ -86,7 +99,8 @@ export const CallConnect = ({
     return (
        <StreamVideo client={client}>
         <StreamCall call={call}>
-            <CallUI meetingName={meetingName}/>
+            {endCallButton}
+            <CallUI meetingName={meetingName} onJoined={onJoined} onEnded={onEnded} onLeave={onLeave} onEndCall={onEndCall} isHost={isHost}/>
         </StreamCall>
        </StreamVideo>
     )
