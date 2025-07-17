@@ -17,7 +17,6 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 
 interface Props {
     onJoin: () => void;
-    isJoining?: boolean;
 }
 
 const DisabledVideoPreview = () => {
@@ -48,7 +47,7 @@ const AllowBrowserPermission = () => {
     )
 }
 
-export const CallLobby = ({onJoin, isJoining}: Props) => {
+export const CallLobby = ({onJoin}: Props) => {
     const {useCameraState, useMicrophoneState} = useCallStateHooks();
     const {hasBrowserPermission: hasMicPermission} = useMicrophoneState();
     const {hasBrowserPermission: hasCameraPermission} = useCameraState();
@@ -76,16 +75,15 @@ export const CallLobby = ({onJoin, isJoining}: Props) => {
                     </div>
                     <div className="flex gap-x-2 justify-between w-full">
                         <Button asChild variant="ghost">
-                            <Link href = "/video-calls">
+                            <Link href = "/meetings">
                                Cancel
                             </Link>
                         </Button>
                         <Button
-                          onClick={onJoin}
-                          disabled={isJoining}
+                        onClick={onJoin}
                         >
-                          <LogInIcon/>
-                          {isJoining ? "Joining..." : "Join Call"}
+                            <LogInIcon/>
+                            Join Call
                         </Button>
                     </div>
                 </div>

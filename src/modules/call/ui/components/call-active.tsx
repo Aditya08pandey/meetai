@@ -7,8 +7,6 @@ import {
 
 interface Props {
     onLeave : () => void;
-    onEndCall?: () => void;
-    isHost?: boolean;
     meetingName: string;
 }
 
@@ -24,7 +22,7 @@ export const CallActive = ({onLeave, meetingName}: Props) => {
                 </h4>
             </div>
             <SpeakerLayout/>
-            <div className="bg-[#101213] rounded-full px-4 flex justify-center items-center">
+            <div className="bg-[#101213] rounded-full px-4">
                 <CallControls onLeave={onLeave}/>
             </div>
         </div>

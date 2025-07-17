@@ -22,7 +22,8 @@ import{
 import Link from "next/link";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Image from 'next/image';
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -31,8 +32,6 @@ const formSchema = z.object({
 
 export const SignInView = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const redirectTo = searchParams?.get("redirect") || "/";
     
     const [error, setError] = useState<string | null>(null)
     const [pending, setPending] = useState(false);
@@ -53,17 +52,19 @@ export const SignInView = () => {
             {
                 email: data.email,
                 password: data.password,
-                callbackURL: redirectTo
+                 callbackURL: "/"
             },
             {
                 onSuccess: () => {
                     setPending(false);
-                    router.push(redirectTo);
+                    router.push("/")
+                   
                 },
                 onError: ({error}) => {
                     setPending(false);
                     setError(error.message)
                 }
+                
             }
         )
     };
@@ -75,12 +76,12 @@ export const SignInView = () => {
         authClient.signIn.social(
             {
                 provider: provider,
-                callbackURL: redirectTo
+                callbackURL: "/"
             },
             {  
                 onSuccess: () => {
                     setPending(false);
-                    router.push(redirectTo);
+                    
                 },
                 onError: ({error}) => {
                     setPending(false);
@@ -194,7 +195,7 @@ export const SignInView = () => {
                 </Form>
 
                 <div className="bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col gap-y-4 items-center justify-center">
-                    <img src="/logo.svg" alt="Image" className="h-[92px] w-[92px]" />
+                    <Image src="/logo.svg" alt="Image" width={92} height={92} />
                     <p className="text-2xl font-semibold text-white">
                         Meet.AI
                     </p>

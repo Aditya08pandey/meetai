@@ -104,34 +104,27 @@ export const meetings = pgTable("meetings", {
 
 })
 
-export const videoCallStatus = pgEnum("video_call_status", [
+export const userVideoCallStatus = pgEnum("user_video_call_status", [
+  "upcoming",
   "active",
-  "processing",
   "completed",
+  "processing",
+  "cancelled",
 ]);
 
-export const videoCalls = pgTable("video_calls", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  hostId: text("host_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  name: text("name"),
-  status: videoCallStatus("status").notNull().default("active"),
+export const userVideoCalls = pgTable("user_video_calls", {
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  name: text("name").notNull(),
+  createdBy: text("created_by").notNull().references(() => user.id, { onDelete: "cascade" }),
+  status: userVideoCallStatus("status").notNull().default("upcoming"),
+  scheduledAt: timestamp("scheduled_at"),
+  startedAt: timestamp("started_at"),
+  endedAt: timestamp("ended_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
-export const videoCallParticipants = pgTable("video_call_participants", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  callId: text("call_id")
-    .notNull()
-    .references(() => videoCalls.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  joinedAt: timestamp("joined_at").notNull().defaultNow(),
+  joinToken: text("join_token").notNull().unique(),
+  meetingUrl: text("meeting_url").notNull().unique(),
+  transcriptUrl: text("transcript_url"),
+  recordingUrl: text("recording_url"),
+  summary: text("summary"),
 });

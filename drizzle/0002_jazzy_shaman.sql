@@ -1,2 +1,0 @@
-CREATE TYPE "public"."video_call_status" AS ENUM('active', 'processing', 'completed');--> statement-breakpoint
-ALTER TABLE "video_calls" ADD COLUMN "status" "video_call_status" DEFAULT 'active' NOT NULL;

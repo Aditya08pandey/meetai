@@ -33,8 +33,8 @@ const firstSection = [
     },
     {
         icon: VideoIcon,
-        label: "Free Video Calls",
-        href: "/video-calls"
+        label: "Video Calls",
+        href: "/user-video-calls"
     }
 ];
 

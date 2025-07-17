@@ -26,7 +26,7 @@ export const CallProvider = ({meetingId, meetingName}: Props) => {
         meetingId={meetingId}
         meetingName={meetingName}
         userId={data.user.id}
-        userName={data.user.name}
+        userName={data.user.id}
         userImage={
             data.user.image ??
             generateAvatarUri({seed: data.user.name, variant:"initials"})
