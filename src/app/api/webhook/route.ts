@@ -156,40 +156,22 @@ import {
           .where(and(eq(meetings.id, meetingId), eq(meetings.status, "active")));
       } else if (userVideoCallId) {
         // New logic for user video calls
-        // Only allow creator to mark as processing
+        // Only allow creator to mark as completed
+        console.log("[Webhook] call.session_ended userVideoCallId:", userVideoCallId);
         const [existingCall] = await db.select().from(userVideoCalls).where(eq(userVideoCalls.id, userVideoCallId));
-        console.log("[Webhook] Found user video call:", existingCall);
+        console.log("[Webhook] DB lookup for id:", userVideoCallId, "Result:", existingCall);
         if (!existingCall) {
           console.log("[Webhook] User video call not found for id:", userVideoCallId);
           return NextResponse.json({ error: "User video call not found" }, { status: 404 });
         }
-  
-        // Define interface for ended_by fields instead of using any
-        interface CallWithEndedBy {
-          ended_by?: string;
-          ended_by_user_id?: string;
-        }
-  
-        const callWithEndedBy = event.call as CallWithEndedBy;
-        const endedBy = callWithEndedBy.ended_by || callWithEndedBy.ended_by_user_id;
-  
-        if (!endedBy) {
-          console.log("[Webhook] No ended_by or ended_by_user_id on event.call:", event.call);
-          return NextResponse.json({ error: "No ended_by info in event" }, { status: 400 });
-        }
-        if (existingCall.createdBy !== endedBy) {
-          console.log("[Webhook] Not the creator. ended_by:", endedBy, "createdBy:", existingCall.createdBy);
-          // Not the creator, do not mark as processing
-          return NextResponse.json({ error: "Only the creator can end the meeting" }, { status: 403 });
-        }
         const updateResult = await db
           .update(userVideoCalls)
           .set({
-            status: "processing",
+            status: "completed",
             endedAt: new Date(),
           })
-          .where(eq(userVideoCalls.id, existingCall.id));
-        console.log("[Webhook] Updated user video call to processing. Result:", updateResult);
+          .where(eq(userVideoCalls.id, userVideoCallId));
+        console.log("[Webhook] DB update result:", updateResult);
       }
     } else if (eventType === "call.transcription_ready") {
         const event = payload as CallTranscriptionReadyEvent;

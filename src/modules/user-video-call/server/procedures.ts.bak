@@ -20,11 +20,10 @@ export const userVideoCallRouter = createTRPCRouter({
       // Generate unique joinToken and meetingUrl
       const joinToken = nanoid(24);
       const meetingUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/user-video-calls/join/${joinToken}`;
-      const dbId = nanoid(); // Generate the id once
       const [call] = await db
         .insert(userVideoCalls)
         .values({
-          id: dbId, // Use the same id for DB and Stream call
+          id: nanoid(),
           name: input.name,
           createdBy: ctx.auth.user.id,
           status: input.status ?? "upcoming",
@@ -34,12 +33,12 @@ export const userVideoCallRouter = createTRPCRouter({
         })
         .returning();
       // Create the call on Stream Video
-      const streamCall = streamVideo.video.call("default", dbId); // Use dbId here
+      const streamCall = streamVideo.video.call("default", call.id);
       await streamCall.create({
         data: {
           created_by_id: ctx.auth.user.id,
           custom: {
-            userVideoCallId: dbId, // Use dbId here
+            userVideoCallId: call.id,
             callName: call.name,
           },
           settings_override: {

@@ -8,15 +8,22 @@ import { UserCallUI } from "@/modules/user-video-call/ui/components/call-ui";
 import { authClient } from "@/lib/auth-client";
 import { LoadingState } from "@/components/loading-state";
 import { EmptyState } from "@/components/empty-state";
+import { UserVideoCallViewHeader } from "@/modules/user-video-call/ui/components/user-video-call-view-header";
+import { useRouter } from "next/navigation";
+import { UserVideoCallUpcomingState } from "@/modules/user-video-call/ui/components/upcoming-state";
 
 export default function UserVideoCallRoom() {
   const { callId } = useParams();
   const trpc = useTRPC();
+  const router = useRouter();
   const { data: call } = useQuery(trpc.userVideoCalls.get.queryOptions({ id: callId as string }));
   const { mutateAsync: generateToken } = useMutation(trpc.userVideoCalls.generateToken.mutationOptions());
+  // Removed unused removeCall and confirmRemove
   const [client, setClient] = useState<StreamVideoClient>();
   const [callObj, setCallObj] = useState<Call>();
+  const [forceShowLobby, setForceShowLobby] = useState(false);
   const [show, setShow] = useState<"lobby" | "call" | "ended">("lobby");
+  const { mutateAsync: updateCallStatus } = useMutation(trpc.userVideoCalls.update.mutationOptions());
 
   // Use authenticated user from session
   const { data: session, isPending } = authClient.useSession();
@@ -86,15 +93,31 @@ export default function UserVideoCallRoom() {
       </div>
     );
   }
+  const handleStartCall = async () => {
+    await updateCallStatus({ id: callId as string, status: "active" });
+    setForceShowLobby(true);
+    setShow("lobby");
+  };
+  if (call.status === "upcoming" && !forceShowLobby) {
+    return <UserVideoCallUpcomingState onStart={handleStartCall} onCancel={() => router.push('/user-video-calls')} />;
+  }
   if (isPending || !user || !client || !callObj) return <div className="flex flex-col items-center justify-center h-[60vh]"><div className="text-lg">Connecting...</div></div>;
 
   return (
-    <div className="w-screen h-screen bg-black">
-      <StreamVideo client={client}>
-        <StreamCall call={callObj}>
-          <UserCallUI callName={call.name} show={show} setShow={setShow} />
-        </StreamCall>
-      </StreamVideo>
-    </div>
+    <>
+      {/* Removed RemoveConfirmation */}
+      <UserVideoCallViewHeader />
+      <div className="w-screen h-screen bg-black">
+        <StreamVideo client={client}>
+          <StreamCall call={callObj}>
+            <UserCallUI 
+              callName={call.name} 
+              show={show} 
+              setShow={setShow}
+            />
+          </StreamCall>
+        </StreamVideo>
+      </div>
+    </>
   );
 } 

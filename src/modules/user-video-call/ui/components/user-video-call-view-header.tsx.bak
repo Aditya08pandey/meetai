@@ -1,0 +1,32 @@
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { ChevronRightIcon, MoreVerticalIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+
+interface Props {
+  callId: string;
+  callName: string;
+  onEdit?: () => void;
+  onRemove?: () => void;
+}
+
+export const UserVideoCallViewHeader = ({
+  callId,
+  callName,
+  onEdit,
+  onRemove,
+}: Props) => {
+  return null;
+}; 

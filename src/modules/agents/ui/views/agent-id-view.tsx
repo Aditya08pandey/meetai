@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { VideoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useConfirm } from "@/hooks/use-confirm";
 import { UpdateAgentDialog } from "../components/update-agent-dialog";
 
 interface Props {
@@ -42,21 +41,11 @@ export const AgentIdView = ({agentId}: Props) => {
         }),
     );
 
-    const [RemoveConfirmation, confirmRemove] = useConfirm(
-        "Are you sure?",
-        `The following action will remove ${data.meetingCount} associated meeting`,
-    );
+    // Removed RemoveConfirmation and confirmRemove logic
 
-    const handleRemoveAgent = async () => {
-        const ok = await confirmRemove();
-
-        if(!ok) return;
-
-        await removeAgent.mutateAsync({ id: agentId});
-    }
     return (
         <>
-        <RemoveConfirmation/>
+        {/* Removed RemoveConfirmation */}
         <UpdateAgentDialog 
         open={updateAgentDialogOpen}
         onOpenChange={setUpdateAgentDialogOpen}
@@ -67,7 +56,12 @@ export const AgentIdView = ({agentId}: Props) => {
              agentId={agentId}
              agentName={data.name}
              onEdit={() => setUpdateAgentDialogOpen(true)}
-             onRemove={handleRemoveAgent}
+             onRemove={() => {
+                const ok = window.confirm(`Are you sure? This action will remove ${data.meetingCount} associated meeting.`);
+                if (ok) {
+                    removeAgent.mutateAsync({ id: agentId });
+                }
+            }}
             />
             <div className="bg-white rounded-lg border">
                 <div className="px-4 py-5 gap-y-5 flex flex-col col-span-5">

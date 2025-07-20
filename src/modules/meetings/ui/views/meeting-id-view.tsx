@@ -3,12 +3,10 @@
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { MeetingIdViewHeader } from "../components/meeting-id-view-header";
-import { useRouter } from "next/navigation";
-import { useConfirm } from "@/hooks/use-confirm";
-import { UpdateMeetingDialog } from "../components/update-meeting-dialog";
 import { useState } from "react";
+import { UpdateMeetingDialog } from "../components/update-meeting-dialog";
 import { UpcomingState } from "../components/upcoming-state";
 import { ActiveState } from "../components/active-state";
 import { CancelledState } from "../components/cancelled-state";
@@ -21,41 +19,17 @@ interface Props {
 
 export const MeetingIdView = ({meetingId} : Props) => {
     const trpc = useTRPC();
-    const router = useRouter();
-    const queryClient = useQueryClient();
-
     const [updateMeetingDialogOpen, setUpdateMeetingDialogOpen] = useState(false);
  
-    const [RemoveConfirmation, confirmRemove] = useConfirm(
-        "Are you sure?",
-        "The following action will remove this meeting"
-    );
+    // Removed RemoveConfirmation and confirmRemove logic
 
     const {data} = useSuspenseQuery(
         trpc.meetings.getOne.queryOptions({ id: meetingId}),
     );
 
-    const removeMeeting = useMutation(
-    trpc.meetings.remove.mutationOptions({
-        onSuccess: async() => {
-           await queryClient.invalidateQueries(trpc.meetings.getMany.queryOptions({}));
-            await  queryClient.invalidateQueries(
-                    trpc.premium.getFreeUsage.queryOptions(),
-                );
-            router.push("/meetings");
-        },
+    // Removed unused removeMeeting
 
-    }),
-
-    )
-
-    const handleRemoveMeeting = async () => {
-        const ok = await confirmRemove();
-
-        if(!ok) return;
-
-        await removeMeeting.mutateAsync({id: meetingId});
-    }
+    // Removed RemoveConfirmation and confirmRemove logic
 
     const isActive = data.status === "active";
     const isUpcoming = data.status === "upcoming";
@@ -68,7 +42,6 @@ export const MeetingIdView = ({meetingId} : Props) => {
 
     return (
         <>
-        <RemoveConfirmation />
             <UpdateMeetingDialog
                 open= {updateMeetingDialogOpen}
                 onOpenChange={setUpdateMeetingDialogOpen}
@@ -79,7 +52,9 @@ export const MeetingIdView = ({meetingId} : Props) => {
                     meetingId={meetingId}
                     meetingName={data.name}
                     onEdit={() => setUpdateMeetingDialogOpen(true)}
-                    onRemove={handleRemoveMeeting}
+                    onRemove={() => {
+                        // Removed RemoveConfirmation and confirmRemove logic
+                    }}
                 />
                 {isCancelled && <CancelledState />}
                 {isProcessing && <ProcessingState/>}
